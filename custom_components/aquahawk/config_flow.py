@@ -59,25 +59,30 @@ class AquahawkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors: Dict[str, str] = {}
         if user_input is not None:
             try:
+                normalized_hostname = normalize_hostname(user_input[CONF_HOSTNAME])
+            except ValueError:
+                errors["base"] = "invalid_hostname"
+            else:
                 normalized_input = {
                     **user_input,
-                    CONF_HOSTNAME: normalize_hostname(user_input[CONF_HOSTNAME]),
+                    CONF_HOSTNAME: normalized_hostname,
                 }
-                await validate_auth(
-                    normalized_input[CONF_ACCOUNT_NUMBER],
-                    normalized_input[CONF_HOSTNAME],
-                    normalized_input[CONF_USERNAME],
-                    normalized_input[CONF_PASSWORD],
-                    self.hass,
-                )
-            except ValueError:
-                errors["base"] = "auth"
-            except (aiohttp.ClientError, TimeoutError):
-                errors["base"] = "cannot_connect"
-            if not errors:
-                # Input is valid, set data.
-                self.data = normalized_input
-                return self.async_create_entry(title="AquaHawk", data=self.data)
+                try:
+                    await validate_auth(
+                        normalized_input[CONF_ACCOUNT_NUMBER],
+                        normalized_input[CONF_HOSTNAME],
+                        normalized_input[CONF_USERNAME],
+                        normalized_input[CONF_PASSWORD],
+                        self.hass,
+                    )
+                except ValueError:
+                    errors["base"] = "auth"
+                except (aiohttp.ClientError, TimeoutError):
+                    errors["base"] = "cannot_connect"
+                if not errors:
+                    # Input is valid, set data.
+                    self.data = normalized_input
+                    return self.async_create_entry(title="AquaHawk", data=self.data)
 
         return self.async_show_form(
             step_id="user", data_schema=AUTH_SCHEMA, errors=errors
