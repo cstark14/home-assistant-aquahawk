@@ -26,7 +26,7 @@ Once the integration is installed, you can add it to the Home Assistant by going
 ### Configuring
 
 1. Add `AquaHawk` integration via UI.
-2. Enter AquaHawk cloud hostname, account id, username, and password.
+2. Enter the AquaHawk cloud hostname or full portal URL, account id, username, and password.
 
 ## Known issues
 

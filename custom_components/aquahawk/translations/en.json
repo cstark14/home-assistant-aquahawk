@@ -1,7 +1,8 @@
 {
   "config": {
     "error": {
-      "auth": "The authentication failed."
+      "auth": "The authentication failed.",
+      "cannot_connect": "Could not connect to AquaHawk."
     },
     "step": {
       "user": {
