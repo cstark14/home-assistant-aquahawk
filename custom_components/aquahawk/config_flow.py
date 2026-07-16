@@ -49,7 +49,7 @@ async def validate_auth(
 class AquahawkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """AquaHawk Custom config flow."""
 
-    async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
+    async def async_step_user(self, user_input: Optional[Dict[str, str]] = None):
         """Invoked when a user initiates a flow via the user interface."""
         errors: Dict[str, str] = {}
         if user_input is not None:
