@@ -58,11 +58,11 @@ class AquahawkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Invoked when a user initiates a flow via the user interface."""
         errors: Dict[str, str] = {}
         if user_input is not None:
-            normalized_input = dict(user_input)
             try:
-                normalized_input[CONF_HOSTNAME] = normalize_hostname(
-                    user_input[CONF_HOSTNAME]
-                )
+                normalized_input = {
+                    **user_input,
+                    CONF_HOSTNAME: normalize_hostname(user_input[CONF_HOSTNAME]),
+                }
                 await validate_auth(
                     normalized_input[CONF_ACCOUNT_NUMBER],
                     normalized_input[CONF_HOSTNAME],
