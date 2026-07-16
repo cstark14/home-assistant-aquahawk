@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Dict, Optional
 
@@ -36,7 +37,14 @@ async def validate_auth(
     password: str,
     hass: core.HomeAssistant,
 ) -> None:
-    """Validate AquaHawk credentials."""
+    """Validate AquaHawk credentials.
+
+    account_number is the AquaHawk account number.
+    hostname is the normalized AquaHawk host.
+    username is the AquaHawk username.
+    password is the AquaHawk password.
+    hass provides the shared Home Assistant HTTP session.
+    """
     aquahawk = create_aquahawk_client(
         hass, account_number, hostname, username, password
     )
@@ -72,7 +80,7 @@ class AquahawkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     )
                 except ValueError:
                     errors["base"] = "auth"
-                except (aiohttp.ClientError, TimeoutError):
+                except (aiohttp.ClientError, asyncio.TimeoutError):
                     errors["base"] = "cannot_connect"
                 if not errors:
                     return self.async_create_entry(
