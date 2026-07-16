@@ -36,10 +36,7 @@ async def validate_auth(
     password: str,
     hass: core.HomeAssistant,
 ) -> None:
-    """Validate AquaHawk credentials.
-
-    Raises a ValueError if the credentials or hostname are invalid.
-    """
+    """Validate AquaHawk credentials."""
     aquahawk = create_aquahawk_client(
         hass, account_number, hostname, username, password
     )
