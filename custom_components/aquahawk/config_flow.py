@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 import aiohttp
 from aquahawk_client import AuthenticationError
@@ -49,8 +49,6 @@ async def validate_auth(
 class AquahawkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """AquaHawk Custom config flow."""
 
-    data: Optional[Dict[str, Any]]
-
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Invoked when a user initiates a flow via the user interface."""
         errors: Dict[str, str] = {}
@@ -77,9 +75,9 @@ class AquahawkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 except (aiohttp.ClientError, TimeoutError):
                     errors["base"] = "cannot_connect"
                 if not errors:
-                    # Input is valid, set data.
-                    self.data = normalized_input
-                    return self.async_create_entry(title="AquaHawk", data=self.data)
+                    return self.async_create_entry(
+                        title="AquaHawk", data=normalized_input
+                    )
 
         return self.async_show_form(
             step_id="user", data_schema=AUTH_SCHEMA, errors=errors
