@@ -1,7 +1,9 @@
 {
   "config": {
     "error": {
-      "auth": "The authentication failed."
+      "auth": "The authentication failed.",
+      "cannot_connect": "Could not connect to AquaHawk.",
+      "invalid_hostname": "Enter a valid AquaHawk hostname or portal URL."
     },
     "step": {
       "user": {

@@ -1,11 +1,14 @@
+import asyncio
 import logging
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
-from aquahawk_client import AquaHawkClient, AuthenticationError
+import aiohttp
+from aquahawk_client import AuthenticationError
 from homeassistant import config_entries, core
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 
+from .client import create_aquahawk_client
 from .const import (
     CONF_ACCOUNT_NUMBER,
     CONF_HOSTNAME,
@@ -13,6 +16,7 @@ from .const import (
     CONF_USERNAME,
     DOMAIN,
 )
+from .util import normalize_hostname
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,13 +37,20 @@ async def validate_auth(
     password: str,
     hass: core.HomeAssistant,
 ) -> None:
-    """Validates a GitHub access token.
+    """Validate AquaHawk credentials.
 
-    Raises a ValueError if the auth token is invalid.
+    Args:
+        account_number: AquaHawk account number.
+        hostname: Normalized AquaHawk host.
+        username: AquaHawk username.
+        password: AquaHawk password.
+        hass: Home Assistant instance used to access the shared HTTP session.
     """
-    aquahawk = AquaHawkClient(account_number, hostname, username, password)
+    aquahawk = create_aquahawk_client(
+        hass, account_number, hostname, username, password
+    )
     try:
-        aquahawk.authenticate()
+        await aquahawk.authenticate()
     except AuthenticationError as err:
         raise ValueError from err
 
@@ -47,27 +58,35 @@ async def validate_auth(
 class AquahawkConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """AquaHawk Custom config flow."""
 
-    data: Optional[Dict[str, Any]]
-
-    async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
+    async def async_step_user(self, user_input: Optional[Dict[str, str]] = None):
         """Invoked when a user initiates a flow via the user interface."""
         errors: Dict[str, str] = {}
         if user_input is not None:
             try:
-                await validate_auth(
-                    user_input[CONF_ACCOUNT_NUMBER],
-                    user_input[CONF_HOSTNAME],
-                    user_input[CONF_USERNAME],
-                    user_input[CONF_PASSWORD],
-                    self.hass,
-                )
+                normalized_hostname = normalize_hostname(user_input[CONF_HOSTNAME])
             except ValueError:
-                errors["base"] = "auth"
-            if not errors:
-                # Input is valid, set data.
-                self.data = user_input
-            # Return the form of the next step.
-            return self.async_create_entry(title="AquaHawk", data=self.data)
+                errors["base"] = "invalid_hostname"
+            else:
+                normalized_input = {
+                    **user_input,
+                    CONF_HOSTNAME: normalized_hostname,
+                }
+                try:
+                    await validate_auth(
+                        normalized_input[CONF_ACCOUNT_NUMBER],
+                        normalized_input[CONF_HOSTNAME],
+                        normalized_input[CONF_USERNAME],
+                        normalized_input[CONF_PASSWORD],
+                        self.hass,
+                    )
+                except ValueError:
+                    errors["base"] = "auth"
+                except (aiohttp.ClientError, asyncio.TimeoutError):
+                    errors["base"] = "cannot_connect"
+                if not errors:
+                    return self.async_create_entry(
+                        title="AquaHawk", data=normalized_input
+                    )
 
         return self.async_show_form(
             step_id="user", data_schema=AUTH_SCHEMA, errors=errors

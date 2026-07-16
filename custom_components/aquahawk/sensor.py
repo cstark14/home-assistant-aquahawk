@@ -23,6 +23,7 @@ from .const import (
     DOMAIN,
     Period,
 )
+from .client import create_aquahawk_client
 
 _LOGGER = logging.getLogger(__name__)
 # Time between updating data from AquaHawk
@@ -50,7 +51,8 @@ async def async_setup_entry(
     # Update our config to include new repos and remove those that have been removed.
     if config_entry.options:
         config.update(config_entry.options)
-    aquahawk = AquaHawkClient(
+    aquahawk = create_aquahawk_client(
+        hass,
         config.get(CONF_ACCOUNT_NUMBER),
         config.get(CONF_HOSTNAME),
         config.get(CONF_USERNAME),
@@ -101,8 +103,6 @@ class AquaHawkSensor(SensorEntity):
 
             self._attr_native_value = usage.timeseries[-1].water_use.gallons
             self._attr_available = True
-        # trunk-ignore(flake8/E722)
-        # trunk-ignore(ruff/E722)
-        except:
+        except Exception:
             self._attr_available = False
             _LOGGER.exception("Error retrieving data from AquaHawk")
