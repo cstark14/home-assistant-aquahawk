@@ -1,12 +1,12 @@
 {
-  "domain": "aquahawk",
-  "name": "AquaHawk",
-  "codeowners": ["@ablyler"],
+  "domain": "aquahawk_cstark",
+  "name": "AquaHawk_CStarkCustom",
+  "codeowners": ["@ablyler","@cstark14"],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/ablyler/home-assistant-aquahawk",
+  "documentation": "https://github.com/cstark14/home-assistant-aquahawk",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/ablyler/home-assistant-aquahawk/issues",
+  "issue_tracker": "https://github.com/cstark14/home-assistant-aquahawk/issues",
   "requirements": ["aquahawk-client==0.0.1"],
   "version": "0.0.5"
 }
