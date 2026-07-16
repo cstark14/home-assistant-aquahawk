@@ -39,11 +39,12 @@ async def validate_auth(
 ) -> None:
     """Validate AquaHawk credentials.
 
-    account_number is the AquaHawk account number.
-    hostname is the normalized AquaHawk host.
-    username is the AquaHawk username.
-    password is the AquaHawk password.
-    hass provides the shared Home Assistant HTTP session.
+    Args:
+        account_number: AquaHawk account number.
+        hostname: Normalized AquaHawk host.
+        username: AquaHawk username.
+        password: AquaHawk password.
+        hass: Home Assistant instance used to access the shared HTTP session.
     """
     aquahawk = create_aquahawk_client(
         hass, account_number, hostname, username, password

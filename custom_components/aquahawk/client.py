@@ -14,7 +14,11 @@ def create_aquahawk_client(
     username: str,
     password: str,
 ) -> AquaHawkClient:
-    """Create an AquaHawk client using Home Assistant's shared HTTP session."""
+    """Create an AquaHawk client using Home Assistant's shared HTTP session.
+
+    Existing config entries may still contain a full AquaHawk portal URL, so
+    the hostname is normalized here in addition to config-flow validation.
+    """
     return AquaHawkClient(
         account_number,
         normalize_hostname(hostname),
