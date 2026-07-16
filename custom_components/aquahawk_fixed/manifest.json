@@ -1,6 +1,6 @@
 {
-  "domain": "aquahawk_cstark",
-  "name": "AquaHawk_CStarkCustom",
+  "domain": "aquahawk_fixed",
+  "name": "AquaHawk_fixed",
   "codeowners": ["@ablyler","@cstark14"],
   "config_flow": true,
   "dependencies": [],
