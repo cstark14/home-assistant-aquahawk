@@ -1,6 +1,6 @@
 from enum import Enum
 
-DOMAIN = "aquahawk"
+DOMAIN = "aquahawk_fixed"
 
 CONF_HOSTNAME = "hostname"
 CONF_ACCOUNT_NUMBER = "account_number"
